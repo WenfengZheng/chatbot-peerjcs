@@ -17,14 +17,14 @@ y = data1_loss[:,1]
 
 ###############################################    show   ###############################################
 
-fig = plt.figure(figsize = (7,5))       #figsize是图片的大小`
-ax1 = fig.add_subplot(1, 1, 1) # ax1是子图的名字`
+fig = plt.figure(figsize = (7,5))       #figsize is the size of the picture
+ax1 = fig.add_subplot(1, 1, 1) # ax1 is the name of the subgraph`
 
 pl.plot(x,y,'g-',label=u'128')
-# ‘’g‘’代表“green”,表示画出的曲线是绿色，“-”代表画的曲线是实线，可自行选择，label代表的是图例的名称，一般要在名称前面加一个u，如果名称是中文，会显示不出来，目前还不知道怎么解决。
+# "g" stands for "green", which means that the drawn curve is green, "-" means that the drawn curve is a solid line, which can be selected by yourself, and label represents the name of the legend. Generally, a u should be added in front of the name. If the name It is Chinese, it will not be displayed, and I don’t know how to solve it yet.
 # p2 = pl.plot(x1, y1,'r-', label = u'')
 pl.legend()
-#显示图例
+#show legend
 # p3 = pl.plot(x2,y2, 'b-', label = u'SCRCA_Net')
 pl.legend()
 pl.xlabel(u'ephch')
