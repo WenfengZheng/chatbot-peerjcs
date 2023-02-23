@@ -1,7 +1,7 @@
 #! -*- coding: utf-8 -*-
-# NEZHA模型做闲聊任务
-# 训练脚本
-# 训练环境：tensorflow 1.14 + keras 2.3.1 + bert4keras 0.8.4
+# NEZHA model doing small talk tasks
+# training script
+# training environment：tensorflow 1.14 + keras 2.3.1 + bert4keras 0.8.4
 
 import json
 import numpy as np
@@ -18,7 +18,7 @@ from bert4keras.snippets import DataGenerator, AutoRegressiveDecoder
 from keras.models import Model
 import os
 
-# 使用第2张
+# Use the second sheet
 os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
@@ -27,14 +27,14 @@ batch_size = 16
 steps_per_epoch = 10
 epochs = 10
 
-# nezha配置
+# nezha configuration
 config_path = './PreTrainModel/nezha_gpt_dialog/config.json'
 checkpoint_path = './PreTrainModel/nezha_gpt_dialog/model.ckpt'
 dict_path = './PreTrainModel/nezha_gpt_dialog/vocab.txt'
 
 
 def corpus():
-    """循环读取语料
+    """loop reading corpus
     """
     while True:
         with open('LCCD-large-shuf.json') as f:
@@ -43,14 +43,14 @@ def corpus():
                 yield l
 
 
-# 加载并精简词表
+# Load and refine the vocabulary
 token_dict, keep_tokens = load_vocab(
     dict_path=dict_path,
     simplified=True,
     startswith=['[PAD]', '[UNK]', '[CLS]', '[SEP]'],
 )
 
-# 补充词表
+# Supplementary vocabulary
 compound_tokens = []
 for l in open('user_tokens.csv', encoding='utf-8'):
     token, count = l.strip().split('\t')
@@ -58,12 +58,12 @@ for l in open('user_tokens.csv', encoding='utf-8'):
         token_dict[token] = len(token_dict)
         compound_tokens.append([0])
 
-# 建立分词器
+# build tokenizer
 tokenizer = Tokenizer(token_dict, do_lower_case=True)
 
 
 class data_generator(DataGenerator):
-    """数据生成器
+    """data generator
     """
     def __iter__(self, random=False):
         batch_token_ids, batch_segment_ids = [], []
@@ -86,7 +86,7 @@ class data_generator(DataGenerator):
 
 
 class CrossEntropy(Loss):
-    """交叉熵作为loss，并mask掉padding部分
+    """Cross entropy as loss, and mask off the padding part
     """
     def compute_loss(self, inputs, mask=None):
         y_true, y_pred = inputs
@@ -98,11 +98,11 @@ class CrossEntropy(Loss):
         return loss
 
     def mlm_acc(inputs):
-        """计算准确率的函数，需要封装为一个层
+        """The function to calculate the accuracy rate needs to be encapsulated as a layer
         """
         y_true, y_pred, mask = inputs
-        y_true = y_true[:, 1:]  # 目标token_ids
-        y_pred = y_pred[:, :-1]  # 预测序列，错开一位
+        y_true = y_true[:, 1:]  # Target token_ids
+        y_pred = y_pred[:, :-1]  # Prediction sequence, staggered by one bit
         acc = keras.metrics.sparse_categorical_accuracy(y_true, y_pred)
         acc = K.sum(acc * mask) / (K.sum(mask) + K.epsilon())
         return acc
@@ -112,8 +112,8 @@ model = build_transformer_model(
     checkpoint_path,
     model='nezha',
     application='lm',
-    keep_tokens=keep_tokens,  # 只保留keep_tokens中的字，精简原字表
-    compound_tokens=compound_tokens,  # 要扩充的词表
+    keep_tokens=keep_tokens,  # Only keep the words in keep_tokens, simplify the original word list
+    compound_tokens=compound_tokens,  # vocabulary to expand
 )
 
 output = CrossEntropy(1)([model.inputs[0], model.outputs[0]])
@@ -133,7 +133,7 @@ model.compile(optimizer=optimizer)
 
 
 class ChatBot(AutoRegressiveDecoder):
-    """基于随机采样对话机器人
+    """Chatbots based on random sampling
     """
     @AutoRegressiveDecoder.wraps(default_rtype='probas')
     def predict(self, inputs, output_ids, states):
@@ -165,7 +165,7 @@ def evaluate(data):
     return right / total
 
 class Evaluator(keras.callbacks.Callback):
-    """保存模型权重
+    """save model weights
     """
     def __init__(self):
         self.best_val_acc = 0.
@@ -176,7 +176,7 @@ class Evaluator(keras.callbacks.Callback):
                 model.save_weights('./latest_model.weights')
                 break
              except:
-                 print(u'保存失败，正在重试...')
+                 print(u'Save failed, retrying...')
 
         # val_acc = evaluate(valid_generator)
         # if val_acc > self.best_val_acc:
@@ -193,7 +193,7 @@ if __name__ == '__main__':
 
     evaluator = Evaluator()
     train_generator = data_generator(corpus(), batch_size)
-    # 记录日志
+    # record log
     csv_logger = keras.callbacks.CSVLogger('training_256.log')
     model.fit_generator(
         train_generator.forfit(),
