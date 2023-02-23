@@ -4,14 +4,14 @@ import math
 
 
 def conver_float(x):
-    '''将词向量数据类型转换成可以计算的浮点类型'''
+    '''Convert the word vector data type to a floating point type that can be calculated'''
     float_str = x
     return [float(f) for f in float_str]
 
 
 def process_wordembe(path):
     '''
-    将词向量文件中的所有词向量存放到一个列表lines里
+    Store all word vectors in the word vector file into a list lines
     :param path: a path of english word embbeding file 'glove.840B.300d.txt'
     :return: a list, element is a 301 dimension word embbeding, it's form like this
             ['- 0.12332 ... -0.34542\n', ', 0.23421 ... -0.456733/n', ..., 'you 0.34521 0.78905 ... -0.23123/n']
@@ -23,7 +23,7 @@ def process_wordembe(path):
 
 def word2vec(x, lines):
     '''
-    将一个字符串(这里指句子）中所有的词都向量化，并存放到一个列表里
+    Vectorize all the words in a string (a sentence in the study) and store them in a list
     :param x: a sentence/sequence, type is string, for example 'hello, how are you ?'
     :return: a list, the form like [[word_vector1],...,[word_vectorn]], save per word embbeding of a sentence.
     '''
@@ -32,22 +32,22 @@ def word2vec(x, lines):
     for w in x:
         for line in lines:
             # print(line)
-            if w == line.split()[0]:  # 将词向量按空格切分到一个列表里，将列表的第一个词与x的word比较
+            if w == line.split()[0]:  # Split the word vector into a list by spaces, and compare the first word of the list with the word of x
                 print(w)
-                x_words.append(conver_float(line[:-1].split()[1:]))  # 若在词向量列表中找到对应的词向量，添加到x_words列表里
+                x_words.append(conver_float(line[:-1].split()[1:]))  # If the corresponding word vector is found in the word vector list, add it to the x_words list
                 break
     return x_words
 
 
 def sentence_embedding(x_words):
     '''
-    上面的第一个公式：computing sentence embedding by computing average of all word embeddings of sentence.
+    The first equation above：computing sentence embedding by computing average of all word embeddings of sentence.
     :param x: a sentence, type is string.
     :param x_words: list[list1, list2,...,listn], listk(k=1...n) is word vector which from sentence x,
     :param y_words: list[list1, list2,..., listn], listk(k=1...n) is word vector which from sentence y,
     :return: a scalar, it's value is in [0, 1]
     '''
-    sen_embed = np.array([0 for _ in range(len(x_words[0]))])  # 存放句向量
+    sen_embed = np.array([0 for _ in range(len(x_words[0]))])  # store sentence vector
     print(len(sen_embed))
 
     for x_v in x_words:
@@ -59,7 +59,7 @@ def sentence_embedding(x_words):
 
 
 def cosine_similarity(x, y, norm=False):
-    """ 向量均值法EA:计算两个向量x和y的余弦相似度 """
+    """ Vector mean method EA: Calculate the cosine similarity of two vectors x and y """
     assert len(x) == len(y), "len(x) != len(y)"
     zero_list = np.array([0 for _ in range(len(x))])
     print(zero_list)
@@ -70,7 +70,7 @@ def cosine_similarity(x, y, norm=False):
     res = np.array([[x[i] * y[i], x[i] * x[i], y[i] * y[i]] for i in range(len(x))])
     cos = sum(res[:, 0]) / (np.sqrt(sum(res[:, 1])) * np.sqrt(sum(res[:, 2])))
 
-    return 0.5 * cos + 0.5 if norm else cos  # 归一化到[0, 1]区间内
+    return 0.5 * cos + 0.5 if norm else cos  # Normalized to [0, 1] interval
 
 
 if __name__ == '__main__':
@@ -90,7 +90,7 @@ if __name__ == '__main__':
     # print(x_words)
     # print(y_words)
 
-    # 举例
+    # give an example
     # x_words = [[1.0, 2.0], [3.0, 4.0], [4, 5]]
     x_emb = sentence_embedding(x_words)
     y_emb = sentence_embedding(y_words)
