@@ -1,6 +1,6 @@
 #! -*- coding: utf-8 -*-
-# NEZHA模型做闲聊任务
-# 测试脚本
+# NEZHA model doing small talk tasks
+# test script
 
 import numpy as np
 from bert4keras.backend import keras, K
@@ -8,17 +8,17 @@ from bert4keras.models import build_transformer_model
 from bert4keras.tokenizers import Tokenizer
 from bert4keras.snippets import AutoRegressiveDecoder
 
-# nezha配置
+# nezha configuration
 config_path = './PreTrainModel/nezha_gpt_dialog/config.json'
 checkpoint_path = './PreTrainModel/nezha_gpt_dialog/model.ckpt'
 dict_path = './PreTrainModel/nezha_gpt_dialog/vocab.txt'
 
 
 
-# 建立分词器
+# build tokenizer
 tokenizer = Tokenizer(dict_path, do_lower_case=True)
 
-# 建立并加载模型
+# Build and load the model
 model = build_transformer_model(
     config_path,
     checkpoint_path,
@@ -29,7 +29,7 @@ model.summary()
 
 
 class ChatBot(AutoRegressiveDecoder):
-    """基于随机采样对话机器人
+    """Chatbots based on random sampling
     """
     @AutoRegressiveDecoder.wraps(default_rtype='probas')
     def predict(self, inputs, output_ids, states):
