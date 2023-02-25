@@ -51,14 +51,14 @@ class ChatBot(AutoRegressiveDecoder):
 
 chatbot = ChatBot(start_id=None, end_id=tokenizer._token_end_id, maxlen=32)
 
-# print(chatbot.response([u'别爱我没结果', u'你这样会失去我的', u'失去了又能怎样']))
+# print(chatbot.response([u'Don't love me with no results', u'you will lose me like this', u'what if you lose']))
 
 
 history = []
 while True:
     raw_text = input(">>> ")
     while not raw_text:
-        print('输入不能为空!')
+        print('Input can not be empty!')
         raw_text = input(">>> ")
     raw_text = " ".join(raw_text)
     history.append(raw_text)
