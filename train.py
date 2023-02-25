@@ -91,8 +91,8 @@ class CrossEntropy(Loss):
     def compute_loss(self, inputs, mask=None):
         y_true, y_pred = inputs
         y_mask = K.cast(mask[1], K.floatx())[:, 1:]
-        y_true = y_true[:, 1:]  # 目标token_ids
-        y_pred = y_pred[:, :-1]  # 预测序列，错开一位
+        y_true = y_true[:, 1:]  # Target token_ids
+        y_pred = y_pred[:, :-1]  # Prediction sequence, staggered by one bit
         loss = K.sparse_categorical_crossentropy(y_true, y_pred)
         loss = K.sum(loss * y_mask) / K.sum(y_mask)
         return loss
